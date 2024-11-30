@@ -1,4 +1,5 @@
 USE RetailDBOnline;
+
 -- retrive all orders for customer id 1	
 SELECT o.OrderID, o.OrderDate, o.TotalAmount,
 		oi.OrderItemID ,oi.ProductID, oi.Quantity, oi.Price,
@@ -44,7 +45,7 @@ JOIN OrderItems oi
 ON p.ProductID = oi.ProductID
 GROUP BY pc.CategoryID, pc.CategoryName;
 
--- check if any product is out of stcok
+-- check if any product is out of stock
 SELECT ProductName, Stock
 FROM Products
 WHERE stock = 0;
@@ -101,6 +102,74 @@ ON p.ProductID = oi.ProductID
 JOIN ProductCategory pc 
 ON p.CategoryID = pc.CategoryID
 GROUP BY pc.CategoryID, pc.CategoryName
+
+-- Highest Priced product in each category with product details
+SELECT CategoryName, p1.ProductName, p1.ListPrice
+FROM ProductCategory pc 
+JOIN Products p1 
+ON pc.CategoryID = p1.CategoryID
+WHERE p1.ListPrice = (	SELECT max(Listprice) 
+						from Products p2 
+						where p1.CategoryID = p2.CategoryID
+					 );
+
+-- find orders above $200 value
+SELECT c.FirstName, c.LastName, o.OrderDate, o.OrderID, o.TotalAmount
+FROM Orders o 
+JOIN Customers c
+ON o.CustomerID = c.CustomerID
+WHERE TotalAmount > 200;
+
+
+
+
+-- products with thier total orders
+SELECT p.ProductName, count(o.orderId) AS Number_of_orders
+FROM Products p 
+JOIN OrderItems o 
+ON p.ProductID = o.ProductID
+GROUP BY p.ProductName
+
+-- find top three most frequent orders 
+SELECT TOP 2 p.ProductName, COUNT(o.OrderID) as orderCount
+FROM products p
+JOIN OrderItems o 
+ON p.ProductID = o.ProductID
+GROUP BY p.ProductName
+ORDER BY 2 desc;
+
+
+-- customers from a perticular state 
+SELECT a.State, COUNT(a.addressID) as total
+FROM Customers c
+JOIN Address a
+ON c.AddressID = a.AddressID
+GROUP BY a.State
+
+-- customers with total spending 
+SELECT c.CustomerID, c.FirstName, c.LastName, SUM(o.TotalAmount) as Total
+FROM Customers c
+JOIN Orders o
+ON c.CustomerID = o.CustomerID
+GROUP BY c.CustomerID, c.FirstName, c.LastName
+
+-- list orders with multiple items 
+SELECT o.OrderID, COUNT(oi.OrderItemID) AS TotalItems
+FROM Orders o 
+JOIN OrderItems oi 
+ON o.OrderID = oi.OrderID
+GROUP BY  o.OrderID
+HAVING COUNT(oi.OrderItemID) >1
+ORDER BY COUNT(oi.OrderItemID) DESC;
+
+
+
+
+
+
+
+
+
 
 
 
