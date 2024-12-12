@@ -123,7 +123,7 @@ WHERE TotalAmount > 200;
 
 
 
--- products with thier total orders
+-- products with their total orders
 SELECT p.ProductName, count(o.orderId) AS Number_of_orders
 FROM Products p 
 JOIN OrderItems o 
@@ -161,6 +161,39 @@ ON o.OrderID = oi.OrderID
 GROUP BY  o.OrderID
 HAVING COUNT(oi.OrderItemID) >1
 ORDER BY COUNT(oi.OrderItemID) DESC;
+
+
+-- Queries with Views
+
+select * from products;
+-- Products with all category 
+SELECT *
+	FROM vw_productdetails;
+
+-- producst with price range 
+SELECT *
+	FROM vw_productdetails
+	WHERE ListPrice BETWEEN 50 AND 250;
+
+-- Products in category
+SELECT count(productId), categoryname
+	FROM vw_productdetails	
+	GROUP BY categoryname
+
+-- customers with more than one order	
+SELECT *
+FROM vw_customerorders
+WHERE TotalOrder > 1;
+
+
+-- customers and total spending
+SELECT FirstName, LastName, TotalAmount
+FROM vw_customerorders
+
+-- recent orders
+SELECT *
+	FROM vw_recent_ordersummary
+
 
 
 
